@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.5.5",
+    "@craco/craco": "^6.4.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -10,17 +12,32 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/styled-components": "^5.1.16",
+    "apollo": "^2.33.9",
+    "framer-motion": "^5.3.3",
+    "graphql": "15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.20.5",
+    "react-icons": "^4.3.1",
+    "react-router-dom": "^6.0.2",
     "react-scripts": "4.0.3",
+    "recoil": "^0.5.2",
+    "styled-components": "^5.3.3",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject",
+    "schema:download": "npx apollo service:download --endpoint=http://localhost:4000/graphql graphql-schema.json",
+    "apollo:codegen": "npx apollo codegen:generate src/__generated__ --localSchemaFile=graphql-schema.json --target=typescript --tagName=gql --outputFlat"
+  },
+  "resolutions": {
+    "graphql": "^15.7.2",
+    "**/graphql": "^15.7.2"
   },
   "eslintConfig": {
     "extends": [
