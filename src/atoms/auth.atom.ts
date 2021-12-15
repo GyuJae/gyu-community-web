@@ -1,8 +1,16 @@
 import { atom } from "recoil";
 
-export const TOKEN = "x-jwt";
+interface IAuthState {
+  status: boolean;
+  token: string | null;
+}
 
-export const authState = atom<boolean>({
+export const X_JWT_TOKEN = "x-jwt";
+
+export const authStateAtom = atom<IAuthState>({
   key: "authState",
-  default: Boolean(localStorage.getItem(TOKEN)),
+  default: {
+    status: Boolean(localStorage.getItem(X_JWT_TOKEN)),
+    token: localStorage.getItem(X_JWT_TOKEN),
+  },
 });

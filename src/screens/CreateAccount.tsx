@@ -1,36 +1,27 @@
 import React from "react";
-import { gql, useMutation } from "@apollo/client";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import {
-  loginMutation,
-  loginMutationVariables,
-} from "../__generated__/loginMutation";
-import { SubmitHandler, useForm } from "react-hook-form";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { useRecoilState } from "recoil";
-import { authStateAtom, X_JWT_TOKEN } from "../atoms/auth.atom";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router-dom";
-import { WHOAMI_QUERY } from "../hooks/useMe";
-import { client } from "../apollo";
+import {
+  createUserMutation,
+  createUserMutationVariables,
+} from "../__generated__/createUserMutation";
 
-const LOGIN_MUTATION = gql`
-  mutation loginMutation($input: loginInput!) {
-    login(input: $input) {
+const CREATE_USER_MUTATION = gql`
+  mutation createUserMutation($input: createUserInput!) {
+    createUser(input: $input) {
       ok
       error
-      token
     }
   }
 `;
 
-type LoginInputs = {
-  name: string;
-  password: string;
-};
-
 const Container = styled.main`
   max-width: ${(props) => props.theme.width.centerMaxWidth};
+  margin: 0px auto;
   min-height: 300px;
   display: flex;
   justify-content: center;
@@ -83,38 +74,32 @@ const LoadingIcon = styled(motion.div)`
   align-items: center;
 `;
 
-const Auth = () => {
-  const [authState, setAuthState] = useRecoilState(authStateAtom);
+type CreateAccountInputs = {
+  name: string;
+  password: string;
+};
+
+const CreateAccount = () => {
   const navigate = useNavigate();
-  if (authState.status) {
-    navigate("/", { replace: true });
-  }
-  const onCompleted = async ({
-    login: { ok, error, token },
-  }: loginMutation) => {
-    if (ok && token) {
-      localStorage.setItem(X_JWT_TOKEN, token);
-      setAuthState({ status: true, token });
-      await client.refetchQueries({
-        include: [WHOAMI_QUERY],
-      });
-      window.location.reload();
-      navigate("/", { replace: true });
+  const onCompleted = ({ createUser: { ok, error } }: createUserMutation) => {
+    if (ok) {
+      navigate("/auth");
     } else {
       alert(error);
     }
   };
-  const [loginMutation, { loading }] = useMutation<
-    loginMutation,
-    loginMutationVariables
-  >(LOGIN_MUTATION, {
+  const [createUserFun, { loading }] = useMutation<
+    createUserMutation,
+    createUserMutationVariables
+  >(CREATE_USER_MUTATION, {
     onCompleted,
   });
-  const { register, handleSubmit } = useForm<LoginInputs>();
-  const onSubmit: SubmitHandler<LoginInputs> = ({ name, password }) => {
+  const { register, handleSubmit } = useForm<CreateAccountInputs>();
+
+  const onSubmit: SubmitHandler<CreateAccountInputs> = ({ name, password }) => {
     try {
       if (!loading) {
-        loginMutation({
+        createUserFun({
           variables: {
             input: {
               name,
@@ -130,7 +115,7 @@ const Auth = () => {
 
   return (
     <Container>
-      <Title>로그인</Title>
+      <Title>회원 가입</Title>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Input {...register("name")} placeholder="이름" />
         <Input
@@ -154,11 +139,11 @@ const Auth = () => {
             </LoadingIcon>
           </LoadingContainer>
         ) : (
-          <SubmitInput type="submit" value="로그인" />
+          <SubmitInput type="submit" value="회원가입" />
         )}
       </Form>
     </Container>
   );
 };
 
-export default Auth;
+export default CreateAccount;

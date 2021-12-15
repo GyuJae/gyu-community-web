@@ -1,9 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
-import { darkModeState } from "../atoms/darkMode.atom";
+import { darkModeState, DARKMODE_STATE } from "../atoms/darkMode.atom";
+import { authStateAtom, X_JWT_TOKEN } from "../atoms/auth.atom";
 import { motion } from "framer-motion";
+import { categoryStateAtom } from "../atoms/category.atom";
+import { useMe } from "../hooks/useMe";
+import SLink from "./SLink";
 
 const Container = styled.header`
   display: flex;
@@ -13,7 +16,7 @@ const Container = styled.header`
   align-items: center;
   margin: 0px auto;
   padding: 0px 10px;
-  border-bottom: 3px solid ${(props) => props.theme.color.text};
+  border-bottom: 3px solid ${(props) => props.theme.color.accent};
 `;
 
 const LogoCotainer = styled.div`
@@ -22,6 +25,7 @@ const LogoCotainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  color: ${(props) => props.theme.color.accent};
 `;
 
 const MenuContainer = styled.div`
@@ -35,11 +39,6 @@ const MenuItem = styled.div`
   &:not(:last-child) {
     margin-right: 15px;
   }
-`;
-
-const SLink = styled(Link)`
-  text-decoration: none;
-  color: ${(props) => props.theme.color.text};
 `;
 
 const Switch = styled.div<{ isOn: boolean }>`
@@ -64,16 +63,52 @@ const Handle = styled(motion.div)`
 
 const Header = () => {
   const [darkMode, setDarkMode] = useRecoilState(darkModeState);
-  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+  const [authState, setAuthState] = useRecoilState(authStateAtom);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setCategorySeleted] = useRecoilState(categoryStateAtom);
+  const { data: meData } = useMe();
+
+  const toggleDarkMode = () => {
+    if (darkMode) {
+      localStorage.removeItem(DARKMODE_STATE);
+      setDarkMode(false);
+    } else {
+      localStorage.setItem(DARKMODE_STATE, "darkmode");
+      setDarkMode(true);
+    }
+  };
+  const logOut = () => {
+    localStorage.removeItem(X_JWT_TOKEN);
+    setAuthState({
+      status: false,
+      token: null,
+    });
+  };
   return (
     <Container>
-      <LogoCotainer>
-        <SLink to="/">Logo</SLink>
-      </LogoCotainer>
+      <SLink to="/" onClick={() => setCategorySeleted(null)}>
+        <LogoCotainer>Logo</LogoCotainer>
+      </SLink>
       <MenuContainer>
-        <MenuItem>
-          <SLink to="auth">로그인</SLink>
-        </MenuItem>
+        {authState.status ? (
+          <>
+            <MenuItem onClick={logOut}>
+              <SLink to="/">로그아웃</SLink>
+            </MenuItem>
+            <MenuItem onClick={() => setCategorySeleted(null)}>
+              <SLink to={`user/${meData?.whoAmI.id}`}>프로필</SLink>
+            </MenuItem>
+          </>
+        ) : (
+          <>
+            <MenuItem onClick={() => setCategorySeleted(null)}>
+              <SLink to="auth">로그인</SLink>
+            </MenuItem>
+            <MenuItem onClick={() => setCategorySeleted(null)}>
+              <SLink to="create-account">회원가입</SLink>
+            </MenuItem>
+          </>
+        )}
         <Switch onClick={toggleDarkMode} isOn={darkMode}>
           <Handle
             layout

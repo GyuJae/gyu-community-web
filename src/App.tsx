@@ -1,10 +1,13 @@
+import { AnimateSharedLayout } from "framer-motion";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
+import { authStateAtom } from "./atoms/auth.atom";
 import { darkModeState } from "./atoms/darkMode.atom";
 import Header from "./components/Header";
 import Auth from "./screens/Auth";
+import CreateAccount from "./screens/CreateAccount";
 import Home from "./screens/Home";
 import NotFound from "./screens/NotFound";
 import PostDetail from "./screens/PostDetail";
@@ -75,18 +78,30 @@ a {
 
 function App() {
   const darkMode = useRecoilValue(darkModeState);
+  const authState = useRecoilValue(authStateAtom);
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
       <GlobalStyle />
       <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="auth" element={<Auth />} />
-          <Route path="user/:userId" element={<UserDetail />} />
-          <Route path="post/:postId" element={<PostDetail />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AnimateSharedLayout>
+          <Header />
+          <Routes>
+            <Route path="/*" element={<Home />} />
+            {!authState.status ? (
+              <>
+                <Route path="auth" element={<Auth />} />
+                <Route path="create-account" element={<CreateAccount />} />
+              </>
+            ) : (
+              <>
+                <Route path="create-post" element={<Home />} />
+              </>
+            )}
+            <Route path="user/:userId" element={<UserDetail />} />
+            <Route path="post/:postId" element={<PostDetail />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AnimateSharedLayout>
       </BrowserRouter>
     </ThemeProvider>
   );

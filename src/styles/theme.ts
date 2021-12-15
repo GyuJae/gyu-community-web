@@ -8,6 +8,7 @@ export const lightTheme: DefaultTheme = {
     background: "#F0F0F0",
     text: "#2C3E50",
     accent: "#FF6984",
+    hover: "#dcdcdc",
   },
 };
 
@@ -19,5 +20,6 @@ export const darkTheme: DefaultTheme = {
     background: "#2C3E50",
     text: "#F0F0F0",
     accent: "#FF6984",
+    hover: "#152839",
   },
 };
