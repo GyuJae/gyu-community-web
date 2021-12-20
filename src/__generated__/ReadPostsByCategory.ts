@@ -19,6 +19,7 @@ export interface ReadPostsByCategory_readPostsByCategory_posts {
   __typename: "Post";
   id: number;
   title: string;
+  content: string;
   createdAt: any;
   updatedAt: any;
   userId: number;

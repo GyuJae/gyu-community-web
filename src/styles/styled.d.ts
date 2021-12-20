@@ -10,6 +10,7 @@ declare module "styled-components" {
       text: string;
       accent: string;
       hover: string;
+      accentHover: string;
     };
   }
 }

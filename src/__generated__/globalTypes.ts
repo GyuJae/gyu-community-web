@@ -7,6 +7,11 @@
 // START Enums and Input Objects
 //==============================================================
 
+export interface CreateCommentInput {
+  payload: string;
+  postId: number;
+}
+
 export interface CreatePostInput {
   title: string;
   content: string;
@@ -14,10 +19,30 @@ export interface CreatePostInput {
   categoryId: number;
 }
 
+export interface FindUserByIdInput {
+  id: number;
+}
+
+export interface LikeCommentToggleInput {
+  commentId: number;
+}
+
+export interface ReadCommentsInput {
+  postId: number;
+  skip: number;
+  take: number;
+}
+
 export interface ReadPostsByCategoryInput {
   skip: number;
   take: number;
   categoryId: number;
+}
+
+export interface ReadPostsByUserIdInput {
+  userId: number;
+  skip: number;
+  take: number;
 }
 
 export interface ReadPostsInput {

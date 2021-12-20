@@ -14,6 +14,7 @@ export const READ_POSTS_QUERY = gql`
       posts {
         id
         title
+        content
         createdAt
         updatedAt
         userId

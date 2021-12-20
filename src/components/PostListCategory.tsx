@@ -19,6 +19,7 @@ const READ_POSTS_BY_CATEGORY_QUERY = gql`
       posts {
         id
         title
+        content
         createdAt
         updatedAt
         userId

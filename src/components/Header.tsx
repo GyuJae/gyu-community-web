@@ -83,6 +83,7 @@ const Header = () => {
       status: false,
       token: null,
     });
+    window.location.reload();
   };
   return (
     <Container>
