@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import { categoryStateAtom } from "../atoms/category.atom";
@@ -8,6 +8,7 @@ import {
   ReadPostsByCategoryVariables,
 } from "../__generated__/ReadPostsByCategory";
 import CategoryTitle from "./CategoryTitle";
+import Pagination from "./Pagination";
 import PostListItem from "./PostListItem";
 
 const READ_POSTS_BY_CATEGORY_QUERY = gql`
@@ -43,6 +44,7 @@ const Container = styled.main`
 
 const PostListCategory: React.FC<{ categoryId: number }> = ({ categoryId }) => {
   const categoryState = useRecoilValue(categoryStateAtom);
+  const [page, setPage] = useState<number>(0);
   const { data, loading, error } = useQuery<
     ReadPostsByCategory,
     ReadPostsByCategoryVariables
@@ -76,6 +78,11 @@ const PostListCategory: React.FC<{ categoryId: number }> = ({ categoryId }) => {
       ) : (
         <h1>{data?.readPostsByCategory.error}</h1>
       )}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={data?.readPostsByCategory.totalPages}
+      />
     </Container>
   );
 };

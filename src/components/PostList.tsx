@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { gql, useQuery } from "@apollo/client";
 import { ReadPosts, ReadPostsVariables } from "../__generated__/ReadPosts";
 import PostListItem from "./PostListItem";
 import CategoryTitle from "./CategoryTitle";
+import Pagination from "./Pagination";
 
 export const READ_POSTS_QUERY = gql`
   query ReadPosts($input: ReadPostsInput!) {
@@ -37,12 +38,13 @@ const Container = styled.main`
 `;
 
 const PostList = () => {
+  const [page, setPage] = useState<number>(0);
   const { loading, data, error } = useQuery<ReadPosts, ReadPostsVariables>(
     READ_POSTS_QUERY,
     {
       variables: {
         input: {
-          skip: 0,
+          skip: page * 10,
           take: 10,
         },
       },
@@ -68,6 +70,11 @@ const PostList = () => {
       ) : (
         <h1>{data?.readPosts.error}</h1>
       )}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={data?.readPosts.totalPages}
+      />
     </Container>
   );
 };

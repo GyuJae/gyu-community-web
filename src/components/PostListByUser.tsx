@@ -1,11 +1,12 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import {
   readPostsByUserId,
   readPostsByUserIdVariables,
 } from "../__generated__/readPostsByUserId";
 import PostListItem from "./PostListItem";
+import Pagination from "./Pagination";
 
 const READ_POST_BY_USER_ID = gql`
   query readPostsByUserId($input: ReadPostsByUserIdInput!) {
@@ -39,6 +40,7 @@ const Container = styled.div`
 `;
 
 const PostListByUser: React.FC<{ userId: string }> = ({ userId }) => {
+  const [page, setPage] = useState<number>(0);
   const { data, error, loading } = useQuery<
     readPostsByUserId,
     readPostsByUserIdVariables
@@ -47,7 +49,7 @@ const PostListByUser: React.FC<{ userId: string }> = ({ userId }) => {
       input: {
         userId: parseInt(userId),
         take: 10,
-        skip: 0,
+        skip: page * 10,
       },
     },
   });
@@ -65,6 +67,11 @@ const PostListByUser: React.FC<{ userId: string }> = ({ userId }) => {
           <PostListItem post={post} />
         ))}
       </ul>
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={data?.readPostsByUserId.totalPages}
+      />
     </Container>
   );
 };

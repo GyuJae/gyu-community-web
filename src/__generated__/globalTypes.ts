@@ -31,6 +31,10 @@ export interface LikeCommentToggleInput {
   commentId: number;
 }
 
+export interface LikeToggleInput {
+  postId: number;
+}
+
 export interface ReadCommentsInput {
   postId: number;
   skip: number;
@@ -41,6 +45,14 @@ export interface ReadCommentsLikeSortInput {
   postId: number;
   skip: number;
   take: number;
+}
+
+export interface ReadLikeCountInput {
+  postId: number;
+}
+
+export interface ReadPostByIdInput {
+  postId: number;
 }
 
 export interface ReadPostsByCategoryInput {

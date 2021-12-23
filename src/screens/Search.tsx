@@ -1,9 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import CategoryTitle from "../components/CategoryTitle";
+import Pagination from "../components/Pagination";
 import PostListItem from "../components/PostListItem";
 import {
   searchPostsQuery,
@@ -44,6 +45,7 @@ const Container = styled(motion.main)`
 
 const Search = () => {
   const { state: payload } = useLocation();
+  const [page, setPage] = useState<number>(0);
   const { data, loading, error } = useQuery<
     searchPostsQuery,
     searchPostsQueryVariables
@@ -51,7 +53,7 @@ const Search = () => {
     variables: {
       input: {
         payload,
-        skip: 0,
+        skip: page * 10,
         take: 10,
       },
     },
@@ -73,6 +75,11 @@ const Search = () => {
       {data?.searchPosts.ok && data.searchPosts.posts?.length === 0 && (
         <h1>No Result</h1>
       )}
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={data?.searchPosts.totalPages}
+      />
     </Container>
   );
 };

@@ -9,6 +9,7 @@ import {
 } from "../__generated__/readCommentsQuery";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
+import Pagination from "./Pagination";
 
 export const READ_COMMENTS_QUERY = gql`
   query readCommentsQuery($input: ReadCommentsInput!) {
@@ -97,7 +98,7 @@ const Outline = styled(motion.div)`
 
 const PostComments: React.FC<{ postId: string }> = ({ postId }) => {
   const [likeSort, setLikeSort] = useState<boolean>(false);
-
+  const [page, setPage] = useState<number>(0);
   const { data, loading, error } = useQuery<
     readCommentsQuery,
     readCommentsQueryVariables
@@ -105,7 +106,7 @@ const PostComments: React.FC<{ postId: string }> = ({ postId }) => {
     variables: {
       input: {
         take: 10,
-        skip: 0,
+        skip: page * 10,
         postId: parseInt(postId),
       },
     },
@@ -121,7 +122,7 @@ const PostComments: React.FC<{ postId: string }> = ({ postId }) => {
       variables: {
         input: {
           take: 10,
-          skip: 0,
+          skip: page * 10,
           postId: parseInt(postId),
         },
       },
@@ -184,6 +185,11 @@ const PostComments: React.FC<{ postId: string }> = ({ postId }) => {
               <Comment key={comment.id} comment={comment} />
             ))}
       </ContentContainer>
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={data?.readComments.totalPage}
+      />
     </Container>
   );
 };
