@@ -1,13 +1,12 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import styled from "styled-components";
-import CategoryList from "../components/CategoryList";
 import CreatePostForm from "../components/CreatePostForm";
 import PostList from "../components/PostList";
 import PostListCategory from "../components/PostListCategory";
 
-const Container = styled.main`
+const Container = styled(motion.main)`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -20,20 +19,21 @@ const Home = () => {
   const categoryId = search ? search.split("=")[1] : null;
   const writePostMatch = pathname === "/create-post";
   return (
-    <Container>
-      <CategoryList />
-      {categoryId ? (
-        <PostListCategory categoryId={parseInt(categoryId)} />
-      ) : (
-        <>
-          <PostList />
-          <AnimatePresence>
-            {writePostMatch && <CreatePostForm />}
-          </AnimatePresence>
-        </>
-      )}
-      <Outlet />
-    </Container>
+    <AnimateSharedLayout>
+      <Container layout>
+        {categoryId ? (
+          <PostListCategory categoryId={parseInt(categoryId)} />
+        ) : (
+          <>
+            <PostList />
+            <AnimatePresence>
+              {writePostMatch && <CreatePostForm />}
+            </AnimatePresence>
+          </>
+        )}
+        <Outlet />
+      </Container>
+    </AnimateSharedLayout>
   );
 };
 

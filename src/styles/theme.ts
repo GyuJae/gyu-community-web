@@ -10,6 +10,7 @@ export const lightTheme: DefaultTheme = {
     accent: "#FF6984",
     hover: "#dcdcdc",
     accentHover: "#f5bcc7",
+    backgroundHover: "#FFFFFF",
   },
 };
 
@@ -18,10 +19,11 @@ export const darkTheme: DefaultTheme = {
     centerMaxWidth: "1100px",
   },
   color: {
-    background: "#1f1b24",
+    background: "#212121",
     text: "#F0F0F0",
     accent: "#FF6984",
     hover: "#121212",
     accentHover: "#f5bcc7",
+    backgroundHover: "#383838",
   },
 };

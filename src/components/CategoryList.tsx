@@ -5,7 +5,7 @@ import { motion, AnimateSharedLayout } from "framer-motion";
 import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import { categoryStateAtom } from "../atoms/category.atom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const READ_CATEGORIES_QUERY = gql`
   query ReadCategories {
@@ -24,24 +24,25 @@ const Container = styled.div``;
 
 const CategoryContainer = styled.ul`
   display: flex;
-  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  max-width: ${(props) => props.theme.width.centerMaxWidth};
+  margin: 0px auto;
 `;
 
 const CategoryItem = styled.li`
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 10px;
+  margin: 8px 5px;
   position: relative;
   cursor: pointer;
   flex-shrink: 0;
+  border-radius: 1px;
+  padding: 3px 2px;
   background-color: ${(props) => props.theme.color.text};
-  font-size: 17px;
+  font-size: 13px;
   color: ${(props) => props.theme.color.background};
 `;
 
@@ -52,7 +53,7 @@ const Outline = styled(motion.div)`
   right: -5px;
   bottom: -5px;
   border: 5px solid ${(props) => props.theme.color.accent};
-  border-radius: 50%;
+  border-radius: 3px;
 `;
 
 const CategoryList = () => {
@@ -61,43 +62,44 @@ const CategoryList = () => {
   );
   const [selected, setSelected] = useRecoilState(categoryStateAtom);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   if (error) {
     return <h1 style={{ color: "red" }}>{`${error}`}</h1>;
   }
   return (
     <Container>
-      {loading ? (
-        "loading..."
-      ) : (
-        <AnimateSharedLayout>
-          <CategoryContainer>
-            {data?.readCategories.ok &&
-              data.readCategories.categories?.map((category) => (
-                <CategoryItem
-                  key={category.id}
-                  onClick={() => {
-                    setSelected({ id: category.id, name: category.name });
-                    navigate(`?category=${category.id}`);
-                  }}
-                >
-                  {selected && category.id === selected.id && (
-                    <Outline
-                      layoutId="outline"
-                      className="outline"
-                      initial={false}
-                      transition={{
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 30,
+      {loading
+        ? "loading..."
+        : pathname === "/" && (
+            <AnimateSharedLayout>
+              <CategoryContainer>
+                {data?.readCategories.ok &&
+                  data.readCategories.categories?.map((category) => (
+                    <CategoryItem
+                      key={category.id}
+                      onClick={() => {
+                        setSelected({ id: category.id, name: category.name });
+                        navigate(`?category=${category.id}`);
                       }}
-                    />
-                  )}
-                  {category.name}
-                </CategoryItem>
-              ))}
-          </CategoryContainer>
-        </AnimateSharedLayout>
-      )}
+                    >
+                      {selected && category.id === selected.id && (
+                        <Outline
+                          layoutId="outline"
+                          className="outline"
+                          initial={false}
+                          transition={{
+                            type: "spring",
+                            stiffness: 500,
+                            damping: 30,
+                          }}
+                        />
+                      )}
+                      {category.name}
+                    </CategoryItem>
+                  ))}
+              </CategoryContainer>
+            </AnimateSharedLayout>
+          )}
     </Container>
   );
 };

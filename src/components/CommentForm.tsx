@@ -8,7 +8,7 @@ import {
   createComment,
   createCommentVariables,
 } from "../__generated__/createComment";
-import { READ_COMMENTS_QUERY } from "./PostComments";
+import { READ_COMMENTS_LIKE_QUERY, READ_COMMENTS_QUERY } from "./PostComments";
 
 interface IForm {
   payload: string;
@@ -80,7 +80,7 @@ const CommentForm: React.FC<ICommentForm> = ({ postId }) => {
     if (ok && !error) {
       reset();
       await client.refetchQueries({
-        include: [READ_COMMENTS_QUERY],
+        include: [READ_COMMENTS_QUERY, READ_COMMENTS_LIKE_QUERY],
       });
     }
   };
@@ -112,9 +112,14 @@ const CommentForm: React.FC<ICommentForm> = ({ postId }) => {
     <Container>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Input
-          placeholder="댓글을 작성하시오."
+          placeholder={
+            currentState.status
+              ? "댓글을 작성하시오."
+              : "로그인이 필요한 서비스입니다."
+          }
           {...register("payload", { required: true, maxLength: 255 })}
           maxLength={255}
+          disabled={currentState.status ? false : true}
         />
         <SubmitInput
           type="submit"

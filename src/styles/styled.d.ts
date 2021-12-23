@@ -11,6 +11,7 @@ declare module "styled-components" {
       accent: string;
       hover: string;
       accentHover: string;
+      backgroundHover: string;
     };
   }
 }

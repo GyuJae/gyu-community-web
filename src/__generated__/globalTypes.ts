@@ -19,6 +19,10 @@ export interface CreatePostInput {
   categoryId: number;
 }
 
+export interface DeleteCommentInput {
+  commentId: number;
+}
+
 export interface FindUserByIdInput {
   id: number;
 }
@@ -28,6 +32,12 @@ export interface LikeCommentToggleInput {
 }
 
 export interface ReadCommentsInput {
+  postId: number;
+  skip: number;
+  take: number;
+}
+
+export interface ReadCommentsLikeSortInput {
   postId: number;
   skip: number;
   take: number;
@@ -46,6 +56,12 @@ export interface ReadPostsByUserIdInput {
 }
 
 export interface ReadPostsInput {
+  skip: number;
+  take: number;
+}
+
+export interface SearchPostsInput {
+  payload: string;
   skip: number;
   take: number;
 }

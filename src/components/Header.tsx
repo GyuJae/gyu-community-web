@@ -3,10 +3,14 @@ import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { darkModeState, DARKMODE_STATE } from "../atoms/darkMode.atom";
 import { authStateAtom, X_JWT_TOKEN } from "../atoms/auth.atom";
-import { motion } from "framer-motion";
+import { motion, useCycle, AnimatePresence } from "framer-motion";
 import { categoryStateAtom } from "../atoms/category.atom";
 import { useMe } from "../hooks/useMe";
 import SLink from "./SLink";
+import CategoryList from "./CategoryList";
+import { MenuToggle } from "./MenuToggle";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 const Container = styled.header`
   display: flex;
@@ -17,6 +21,12 @@ const Container = styled.header`
   margin: 0px auto;
   padding: 0px 10px;
   border-bottom: 3px solid ${(props) => props.theme.color.accent};
+`;
+
+const LeftContainer = styled(motion.div)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const LogoCotainer = styled.div`
@@ -61,13 +71,36 @@ const Handle = styled(motion.div)`
   border-radius: 40px;
 `;
 
+const CategoryContainer = styled(motion.div)``;
+
+interface ISearchForm {
+  payload: string;
+}
+
+const FormCotainer = styled.div``;
+
+const SearchForm = styled.form``;
+
+const SearchInput = styled.input`
+  border: none;
+  padding: 5px 10px;
+  width: 400px;
+  border-radius: 2px;
+  &:focus {
+    border: 2px solid ${(props) => props.theme.color.accent};
+    outline: none;
+  }
+`;
+
 const Header = () => {
   const [darkMode, setDarkMode] = useRecoilState(darkModeState);
   const [authState, setAuthState] = useRecoilState(authStateAtom);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setCategorySeleted] = useRecoilState(categoryStateAtom);
+  const [isOpen, toggleOpen] = useCycle(false, true);
   const { data: meData } = useMe();
-
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const toggleDarkMode = () => {
     if (darkMode) {
       localStorage.removeItem(DARKMODE_STATE);
@@ -85,43 +118,72 @@ const Header = () => {
     });
     window.location.reload();
   };
+
+  const { register, handleSubmit } = useForm<ISearchForm>();
+
+  const onSubmit: SubmitHandler<ISearchForm> = ({ payload }) => {
+    navigate("/search", { state: payload });
+  };
+
   return (
-    <Container>
-      <SLink to="/" onClick={() => setCategorySeleted(null)}>
-        <LogoCotainer>Logo</LogoCotainer>
-      </SLink>
-      <MenuContainer>
-        {authState.status ? (
-          <>
-            <MenuItem onClick={logOut}>
-              <SLink to="/">로그아웃</SLink>
-            </MenuItem>
-            <MenuItem onClick={() => setCategorySeleted(null)}>
-              <SLink to={`user/${meData?.whoAmI.id}`}>프로필</SLink>
-            </MenuItem>
-          </>
-        ) : (
-          <>
-            <MenuItem onClick={() => setCategorySeleted(null)}>
-              <SLink to="auth">로그인</SLink>
-            </MenuItem>
-            <MenuItem onClick={() => setCategorySeleted(null)}>
-              <SLink to="create-account">회원가입</SLink>
-            </MenuItem>
-          </>
-        )}
-        <Switch onClick={toggleDarkMode} isOn={darkMode}>
-          <Handle
+    <>
+      <Container>
+        <LeftContainer initial={false} animate={isOpen ? "open" : "closed"}>
+          {pathname === "/" && <MenuToggle toggle={() => toggleOpen()} />}
+          <SLink to="/" onClick={() => setCategorySeleted(null)}>
+            <LogoCotainer>Logo</LogoCotainer>
+          </SLink>
+        </LeftContainer>
+        <FormCotainer>
+          <SearchForm onSubmit={handleSubmit(onSubmit)}>
+            <SearchInput {...register("payload")} autoComplete="off" />
+          </SearchForm>
+        </FormCotainer>
+        <MenuContainer>
+          {authState.status ? (
+            <>
+              <MenuItem onClick={logOut}>
+                <SLink to="/">로그아웃</SLink>
+              </MenuItem>
+              <MenuItem onClick={() => setCategorySeleted(null)}>
+                <SLink to={`/user/${meData?.whoAmI.id}`}>프로필</SLink>
+              </MenuItem>
+            </>
+          ) : (
+            <>
+              <MenuItem onClick={() => setCategorySeleted(null)}>
+                <SLink to="auth">로그인</SLink>
+              </MenuItem>
+              <MenuItem onClick={() => setCategorySeleted(null)}>
+                <SLink to="create-account">회원가입</SLink>
+              </MenuItem>
+            </>
+          )}
+          <Switch onClick={toggleDarkMode} isOn={darkMode}>
+            <Handle
+              layout
+              transition={{
+                type: "spring",
+                stiffness: 700,
+                damping: 30,
+              }}
+            />
+          </Switch>
+        </MenuContainer>
+      </Container>
+      <AnimatePresence>
+        {isOpen && (
+          <CategoryContainer
             layout
-            transition={{
-              type: "spring",
-              stiffness: 700,
-              damping: 30,
-            }}
-          />
-        </Switch>
-      </MenuContainer>
-    </Container>
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <CategoryList />
+          </CategoryContainer>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

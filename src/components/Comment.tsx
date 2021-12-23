@@ -13,26 +13,36 @@ import {
   likeCommentToggleVariables,
 } from "../__generated__/likeCommentToggle";
 import { readCommentsQuery_readComments_comments } from "../__generated__/readCommentsQuery";
+import { BiTrash } from "react-icons/bi";
+import { READ_COMMENTS_LIKE_QUERY, READ_COMMENTS_QUERY } from "./PostComments";
+import {
+  deleteComment,
+  deleteCommentVariables,
+} from "../__generated__/deleteComment";
 
 interface IComment {
   comment: readCommentsQuery_readComments_comments;
 }
 
 const Container = styled.div`
-  display: flex;
   padding: 8px 5px;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 19fr;
   align-items: center;
-  border-bottom: 1px solid ${(props) => props.theme.color.text};
-  wrap: wrap;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  background-color: ${(props) => props.theme.color.backgroundHover};
+  margin-bottom: 5px;
+  border-radius: 5px;
 `;
 
 const ContentContainer = styled.div``;
 
 const TitleContainer = styled.div`
+  width: 100%;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 `;
 
 const Username = styled.div`
@@ -48,12 +58,18 @@ const CreatedAt = styled.div`
 
 const Payload = styled.div`
   font-size: 14px;
-  margin-bottom: 6px;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0px 10px;
 `;
 
 const LikeContainer = styled.div<{ meLike: boolean }>`
   margin-right: 5px;
-  border: 2px solid
+  border: 1.3px solid
     ${(props) =>
       props.meLike ? props.theme.color.accent : props.theme.color.text};
   border-radius: 5px;
@@ -64,12 +80,31 @@ const Like = styled.div`
   border-radius: 3px;
   cursor: pointer;
   font-weight: 500;
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+`;
+
+const Delete = styled.div`
+  font-size: 15px;
+  margin-right: 5px;
+  cursor: pointer;
+`;
+
+const TitleLeftContainer = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
 const COMMENT_LIKE_MUTATION = gql`
   mutation likeCommentToggle($input: LikeCommentToggleInput!) {
     likeCommentToggle(input: $input) {
+      ok
+      error
+    }
+  }
+`;
+
+const COMMENT_DELETE_MUTATION = gql`
+  mutation deleteComment($input: DeleteCommentInput!) {
+    deleteComment(input: $input) {
       ok
       error
     }
@@ -92,7 +127,7 @@ const Comment: React.FC<IComment> = ({ comment }) => {
 
   const currentUser = useRecoilValue(authStateAtom);
 
-  const onCompleted = () => {
+  const onCompletedLikeComment = () => {
     client.writeFragment({
       id: `Comment:${comment.id}`,
       fragment: gql`
@@ -114,22 +149,38 @@ const Comment: React.FC<IComment> = ({ comment }) => {
     useMutation<likeCommentToggle, likeCommentToggleVariables>(
       COMMENT_LIKE_MUTATION,
       {
-        onCompleted,
+        onCompleted: onCompletedLikeComment,
       }
     );
 
-  if (likeError) {
-    return <h1>{likeError}</h1>;
-  }
+  const onCompletedDelete = () => {
+    client.refetchQueries({
+      include: [READ_COMMENTS_QUERY, READ_COMMENTS_LIKE_QUERY],
+    });
+  };
 
-  if (loading || likeLoading) {
+  const [
+    deleteCommentMutation,
+    { loading: deleteLoading, error: deleteError },
+  ] = useMutation<deleteComment, deleteCommentVariables>(
+    COMMENT_DELETE_MUTATION,
+    {
+      onCompleted: onCompletedDelete,
+    }
+  );
+
+  if (loading || likeLoading || deleteLoading) {
     return <h1>loading...</h1>;
   }
-  if (error) {
-    return <h1>{error}</h1>;
+  if (error || deleteError || likeError) {
+    return (
+      <h1>
+        Error:{error} DeleteError:{deleteError} LikeError: {likeError}
+      </h1>
+    );
   }
 
-  const onClickLike = async () => {
+  const onClickLike = () => {
     try {
       if (!currentUser.status) {
         alert("로그인이 필요한 기능입니다.");
@@ -148,21 +199,49 @@ const Comment: React.FC<IComment> = ({ comment }) => {
     }
   };
 
+  const onClickComment = () => {
+    try {
+      if (!currentUser.status) {
+        alert("로그인이 필요한 기능입니다.");
+      }
+      if (!deleteLoading && currentUser.status) {
+        deleteCommentMutation({
+          variables: {
+            input: {
+              commentId: comment.id,
+            },
+          },
+        });
+      }
+    } catch {
+      alert(deleteError);
+    }
+  };
+
   return (
     <Container>
+      <LeftContainer>
+        <LikeContainer meLike={comment.meLike} onClick={onClickLike}>
+          <Like>{comment.commentLikeCount}</Like>
+        </LikeContainer>
+      </LeftContainer>
       <ContentContainer>
         <TitleContainer>
-          <Username>{data?.findUserById.user?.name}</Username>
+          <TitleLeftContainer>
+            <Username>{data?.findUserById.user?.name}</Username>
+            <CreatedAt>
+              {comment.createdAt.split("T")[0]}{" "}
+              {comment.createdAt.split("T")[1].slice(0, 8)}
+            </CreatedAt>
+          </TitleLeftContainer>
+          {comment.isMine && (
+            <Delete onClick={onClickComment}>
+              <BiTrash />
+            </Delete>
+          )}
         </TitleContainer>
         <Payload>{comment.payload}</Payload>
-        <CreatedAt>
-          {comment.createdAt.split("T")[0]}{" "}
-          {comment.createdAt.split("T")[1].slice(0, 8)}
-        </CreatedAt>
       </ContentContainer>
-      <LikeContainer meLike={comment.meLike} onClick={onClickLike}>
-        <Like>{comment.commentLikeCount}</Like>
-      </LikeContainer>
     </Container>
   );
 };

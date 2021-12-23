@@ -11,6 +11,7 @@ import CreateAccount from "./screens/CreateAccount";
 import Home from "./screens/Home";
 import NotFound from "./screens/NotFound";
 import PostDetail from "./screens/PostDetail";
+import Search from "./screens/Search";
 import UserDetail from "./screens/UserDetail";
 import { darkTheme, lightTheme } from "./styles/theme";
 
@@ -97,6 +98,7 @@ function App() {
                 <Route path="create-post" element={<Home />} />
               </>
             )}
+            <Route path="search" element={<Search />} />
             <Route path="user/:userId" element={<UserDetail />} />
             <Route path="post/:postId" element={<PostDetail />} />
             <Route path="*" element={<NotFound />} />

@@ -87,7 +87,9 @@ const PostListItem: React.FC<IPostListItem> = ({ post }) => {
     return <h1>{error}</h1>;
   }
   return (
-    <Container onClick={() => navigate(`post/${post.id}`, { state: { post } })}>
+    <Container
+      onClick={() => navigate(`/post/${post.id}`, { state: { post } })}
+    >
       <LeftBox>
         <ContainerItem>
           {post.file?.length !== 0 && post.file ? (

@@ -2,6 +2,7 @@ import React from "react";
 import { useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import PostComments from "../components/PostComments";
+import PostImages from "../components/PostImages";
 
 const Container = styled.main`
   display: flex;
@@ -32,12 +33,15 @@ const ContentContainer = styled.div`
 const PostDetail = () => {
   const { postId } = useParams<{ postId: string }>();
   const { state } = useLocation();
-
+  console.log(state);
   return (
     <Container>
       <TitleContainer>
         <Title> {state.post.title}</Title>
       </TitleContainer>
+      {state.post.file.length !== 0 && (
+        <PostImages file={state.post.file as string[]} />
+      )}
       <ContentContainer>{state.post.content}</ContentContainer>
       <PostComments postId={postId as string} />
     </Container>

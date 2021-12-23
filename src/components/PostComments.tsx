@@ -1,6 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import { motion, AnimateSharedLayout } from "framer-motion";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { readCommentsLikeSortQuery } from "../__generated__/readCommentsLikeSortQuery";
 import {
   readCommentsQuery,
   readCommentsQueryVariables,
@@ -11,6 +13,26 @@ import CommentForm from "./CommentForm";
 export const READ_COMMENTS_QUERY = gql`
   query readCommentsQuery($input: ReadCommentsInput!) {
     readComments(input: $input) {
+      ok
+      error
+      totalPage
+      comments {
+        id
+        createdAt
+        updatedAt
+        payload
+        userId
+        postId
+        commentLikeCount
+        meLike
+        isMine
+      }
+    }
+  }
+`;
+export const READ_COMMENTS_LIKE_QUERY = gql`
+  query readCommentsLikeSortQuery($input: ReadCommentsLikeSortInput!) {
+    readCommentsLikeSort(input: $input) {
       ok
       error
       totalPage
@@ -49,7 +71,33 @@ const ContentContainer = styled.div`
   wrap: wrap;
 `;
 
+const LikeSortContainer = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+`;
+
+const Sort = styled.div`
+  cursor: pointer;
+  position: relative;
+  &:not(:last-child) {
+    margin-right: 10px;
+  }
+`;
+
+const Outline = styled(motion.div)`
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -10px;
+  border-bottom: 5px solid ${(props) => props.theme.color.accent};
+`;
+
 const PostComments: React.FC<{ postId: string }> = ({ postId }) => {
+  const [likeSort, setLikeSort] = useState<boolean>(false);
+
   const { data, loading, error } = useQuery<
     readCommentsQuery,
     readCommentsQueryVariables
@@ -62,20 +110,79 @@ const PostComments: React.FC<{ postId: string }> = ({ postId }) => {
       },
     },
   });
-  if (loading) {
+
+  const {
+    data: sortData,
+    loading: sortLoaidng,
+    error: sortError,
+  } = useQuery<readCommentsLikeSortQuery, readCommentsQueryVariables>(
+    READ_COMMENTS_LIKE_QUERY,
+    {
+      variables: {
+        input: {
+          take: 10,
+          skip: 0,
+          postId: parseInt(postId),
+        },
+      },
+    }
+  );
+  if (loading || sortLoaidng) {
     return <h1>loading...</h1>;
   }
-  if (error) {
-    return <h1>{error}</h1>;
+  if (error || sortError) {
+    return (
+      <h1>
+        error:{error} sortError: {sortError}
+      </h1>
+    );
   }
   return (
     <Container>
       <CommentTitle> 댓글: {data?.readComments.comments?.length}</CommentTitle>
       <CommentForm postId={postId} />
+      <AnimateSharedLayout>
+        <LikeSortContainer>
+          <Sort onClick={() => setLikeSort(false)}>
+            최신순
+            {!likeSort && (
+              <Outline
+                layoutId="outline"
+                className="outline"
+                initial={false}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 30,
+                }}
+              />
+            )}
+          </Sort>
+          <Sort onClick={() => setLikeSort(true)}>
+            인기순
+            {likeSort && (
+              <Outline
+                layoutId="outline"
+                className="outline"
+                initial={false}
+                transition={{
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 30,
+                }}
+              />
+            )}
+          </Sort>
+        </LikeSortContainer>
+      </AnimateSharedLayout>
       <ContentContainer>
-        {data?.readComments.comments?.map((comment) => (
-          <Comment key={comment.id} comment={comment} />
-        ))}
+        {likeSort
+          ? sortData?.readCommentsLikeSort.comments?.map((comment) => (
+              <Comment key={comment.id} comment={comment} />
+            ))
+          : data?.readComments.comments?.map((comment) => (
+              <Comment key={comment.id} comment={comment} />
+            ))}
       </ContentContainer>
     </Container>
   );
