@@ -7,6 +7,7 @@ import {
   likeToggleMutationVariables,
 } from "../__generated__/likeToggleMutation";
 import { readPostByIdQuery_readPostById_post } from "../__generated__/readPostByIdQuery";
+import Loading from "./Loading";
 
 interface IPostLikeCount {
   postId: number;
@@ -79,7 +80,11 @@ const PostLikeCount: React.FC<IPostLikeCount> = ({ postId, post }) => {
   };
 
   if (likeToggleLoading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (likeToggleError) {
     return <h1>{likeToggleError}</h1>;

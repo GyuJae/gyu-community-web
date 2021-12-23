@@ -9,6 +9,7 @@ import {
 } from "../__generated__/readCommentsQuery";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
+import Loading from "./Loading";
 import Pagination from "./Pagination";
 
 export const READ_COMMENTS_QUERY = gql`
@@ -129,7 +130,11 @@ const PostComments: React.FC<{ postId: string }> = ({ postId }) => {
     }
   );
   if (loading || sortLoaidng) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error || sortError) {
     return (

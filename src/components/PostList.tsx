@@ -5,6 +5,7 @@ import { ReadPosts, ReadPostsVariables } from "../__generated__/ReadPosts";
 import PostListItem from "./PostListItem";
 import CategoryTitle from "./CategoryTitle";
 import Pagination from "./Pagination";
+import Loading from "./Loading";
 
 export const READ_POSTS_QUERY = gql`
   query ReadPosts($input: ReadPostsInput!) {
@@ -51,7 +52,11 @@ const PostList = () => {
     }
   );
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error) {
     return <h1 style={{ color: "red" }}>{`${error}`}</h1>;

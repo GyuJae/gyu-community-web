@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { useRecoilState } from "recoil";
 import { categoryStateAtom } from "../atoms/category.atom";
 import { useNavigate, useLocation } from "react-router-dom";
+import Loading from "./Loading";
 
 export const READ_CATEGORIES_QUERY = gql`
   query ReadCategories {
@@ -68,38 +69,40 @@ const CategoryList = () => {
   }
   return (
     <Container>
-      {loading
-        ? "loading..."
-        : pathname === "/" && (
-            <AnimateSharedLayout>
-              <CategoryContainer>
-                {data?.readCategories.ok &&
-                  data.readCategories.categories?.map((category) => (
-                    <CategoryItem
-                      key={category.id}
-                      onClick={() => {
-                        setSelected({ id: category.id, name: category.name });
-                        navigate(`?category=${category.id}`);
-                      }}
-                    >
-                      {selected && category.id === selected.id && (
-                        <Outline
-                          layoutId="outline"
-                          className="outline"
-                          initial={false}
-                          transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-                      {category.name}
-                    </CategoryItem>
-                  ))}
-              </CategoryContainer>
-            </AnimateSharedLayout>
-          )}
+      {loading ? (
+        <Loading />
+      ) : (
+        pathname === "/" && (
+          <AnimateSharedLayout>
+            <CategoryContainer>
+              {data?.readCategories.ok &&
+                data.readCategories.categories?.map((category) => (
+                  <CategoryItem
+                    key={category.id}
+                    onClick={() => {
+                      setSelected({ id: category.id, name: category.name });
+                      navigate(`?category=${category.id}`);
+                    }}
+                  >
+                    {selected && category.id === selected.id && (
+                      <Outline
+                        layoutId="outline"
+                        className="outline"
+                        initial={false}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
+                      />
+                    )}
+                    {category.name}
+                  </CategoryItem>
+                ))}
+            </CategoryContainer>
+          </AnimateSharedLayout>
+        )
+      )}
     </Container>
   );
 };

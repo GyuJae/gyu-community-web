@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
@@ -8,11 +9,15 @@ const Container = styled.div`
   margin-top: 20px;
 `;
 
-const Prev = styled.div`
+const Prev = styled(motion.div)`
   cursor: pointer;
+  margin-right: 20px;
 `;
 
-const Next = styled(Prev)``;
+const Next = styled(Prev)`
+  margin-right: 0px;
+  margin-left: 20px;
+`;
 
 interface IPagination {
   page: number;
@@ -24,11 +29,25 @@ const Pagination: React.FC<IPagination> = ({ page, setPage, totalPages }) => {
   return (
     <Container>
       {page !== 0 && (
-        <Prev onClick={() => setPage((prev: number) => prev - 1)}>⬅️</Prev>
+        <Prev
+          whileHover={{
+            scale: 1.2,
+          }}
+          onClick={() => setPage((prev: number) => prev - 1)}
+        >
+          ◀
+        </Prev>
       )}
       {page}
       {totalPages && page < totalPages - 1 && (
-        <Next onClick={() => setPage((prev: number) => prev + 1)}>➡️</Next>
+        <Next
+          whileHover={{
+            scale: 1.2,
+          }}
+          onClick={() => setPage((prev: number) => prev + 1)}
+        >
+          ▶
+        </Next>
       )}
     </Container>
   );

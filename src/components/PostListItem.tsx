@@ -11,6 +11,7 @@ import {
 } from "../__generated__/findUserByIdQuery";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 interface IPostListItem {
   post: ReadPosts_readPosts_posts;
@@ -81,7 +82,11 @@ const PostListItem: React.FC<IPostListItem> = ({ post }) => {
     },
   });
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error) {
     return <h1>{error}</h1>;

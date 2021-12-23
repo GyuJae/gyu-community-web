@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import Loading from "../components/Loading";
 import PostListByUser from "../components/PostListByUser";
 import { FIND_USER_BY_ID } from "../Query/findUser.query";
 import {
@@ -53,7 +54,11 @@ const UserDetail = () => {
   }
 
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
 
   if (error) {

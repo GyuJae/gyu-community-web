@@ -19,6 +19,7 @@ import {
   deleteComment,
   deleteCommentVariables,
 } from "../__generated__/deleteComment";
+import Loading from "./Loading";
 
 interface IComment {
   comment: readCommentsQuery_readComments_comments;
@@ -170,7 +171,11 @@ const Comment: React.FC<IComment> = ({ comment }) => {
   );
 
   if (loading || likeLoading || deleteLoading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error || deleteError || likeError) {
     return (

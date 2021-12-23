@@ -8,6 +8,7 @@ import {
   ReadPostsByCategoryVariables,
 } from "../__generated__/ReadPostsByCategory";
 import CategoryTitle from "./CategoryTitle";
+import Loading from "./Loading";
 import Pagination from "./Pagination";
 import PostListItem from "./PostListItem";
 
@@ -58,7 +59,11 @@ const PostListCategory: React.FC<{ categoryId: number }> = ({ categoryId }) => {
     },
   });
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error) {
     return <h1 style={{ color: "red" }}>{error}</h1>;

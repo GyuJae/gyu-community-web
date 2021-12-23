@@ -2,6 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import Loading from "../components/Loading";
 import PostComments from "../components/PostComments";
 import PostImages from "../components/PostImages";
 import PostLikeCount from "../components/PostLikeCount";
@@ -99,7 +100,11 @@ const PostDetail = () => {
   });
 
   if (loading || !state.post) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
 
   if (error || !state.post) {

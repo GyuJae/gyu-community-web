@@ -15,6 +15,7 @@ import {
 } from "../__generated__/createPostMutation";
 import { READ_POSTS_QUERY } from "./PostList";
 import { client } from "../apollo";
+import Loading from "./Loading";
 
 type IForm = {
   title: string;
@@ -198,7 +199,11 @@ const CreatePostForm = () => {
     READ_CATEGORIES_QUERY
   );
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error) {
     return <h1>{error}</h1>;

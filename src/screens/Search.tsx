@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import CategoryTitle from "../components/CategoryTitle";
+import Loading from "../components/Loading";
 import Pagination from "../components/Pagination";
 import PostListItem from "../components/PostListItem";
 import {
@@ -59,7 +60,11 @@ const Search = () => {
     },
   });
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error) {
     return <h1>{error}</h1>;

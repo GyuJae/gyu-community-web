@@ -7,6 +7,7 @@ import {
 } from "../__generated__/readPostsByUserId";
 import PostListItem from "./PostListItem";
 import Pagination from "./Pagination";
+import Loading from "./Loading";
 
 const READ_POST_BY_USER_ID = gql`
   query readPostsByUserId($input: ReadPostsByUserIdInput!) {
@@ -54,7 +55,11 @@ const PostListByUser: React.FC<{ userId: string }> = ({ userId }) => {
     },
   });
   if (loading) {
-    return <h1>loading...</h1>;
+    return (
+      <Container>
+        <Loading />
+      </Container>
+    );
   }
   if (error) {
     return <h1 style={{ color: "red" }}>{`${error}`}</h1>;
