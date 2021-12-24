@@ -9,6 +9,7 @@ export const FIND_USER_BY_ID = gql`
         id
         name
         createdAt
+        isMe
       }
     }
   }

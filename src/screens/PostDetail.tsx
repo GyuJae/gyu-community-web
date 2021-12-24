@@ -32,6 +32,12 @@ const Title = styled.div`
   font-weight: 700;
 `;
 
+const Name = styled.div`
+  margin-left: 10px;
+  color: #999999;
+  cursor: pointer;
+`;
+
 const ContentContainer = styled.div`
   display: flex;
   padding: 20px 5px;
@@ -118,6 +124,9 @@ const PostDetail = () => {
           {" "}
           {state.post.title ? state.post.title : data?.readPostById.post?.title}
         </Title>
+        <Name onClick={() => navigate(`/user/${state.post.userId}`)}>
+          {state.postUsername}
+        </Name>
       </TitleContainer>
       {state.post.file.length !== 0 && (
         <PostImages

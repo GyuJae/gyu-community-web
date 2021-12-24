@@ -20,7 +20,7 @@ const Home = () => {
   const writePostMatch = pathname === "/create-post";
   return (
     <AnimateSharedLayout>
-      <Container layout>
+      <Container>
         {categoryId ? (
           <PostListCategory categoryId={parseInt(categoryId)} />
         ) : (

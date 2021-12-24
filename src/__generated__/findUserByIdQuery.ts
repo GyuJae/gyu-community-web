@@ -14,6 +14,7 @@ export interface findUserByIdQuery_findUserById_user {
   id: number;
   name: string;
   createdAt: any;
+  isMe: boolean;
 }
 
 export interface findUserByIdQuery_findUserById {

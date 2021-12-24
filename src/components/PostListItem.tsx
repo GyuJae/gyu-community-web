@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { ReadPosts_readPosts_posts } from "../__generated__/ReadPosts";
 import { VscBook } from "react-icons/vsc";
-import SLink from "./SLink";
 import { useQuery } from "@apollo/client";
 import { FIND_USER_BY_ID } from "../Query/findUser.query";
 import {
@@ -67,6 +66,7 @@ const RightBox = styled(motion.div)`
   align-items: center;
   font-size: 20px;
   margin-right: 20px;
+  z-index: 100;
 `;
 
 const PostListItem: React.FC<IPostListItem> = ({ post }) => {
@@ -93,7 +93,11 @@ const PostListItem: React.FC<IPostListItem> = ({ post }) => {
   }
   return (
     <Container
-      onClick={() => navigate(`/post/${post.id}`, { state: { post } })}
+      onClick={() =>
+        navigate(`/post/${post.id}`, {
+          state: { post, postUsername: data?.findUserById.user?.name },
+        })
+      }
     >
       <LeftBox>
         <ContainerItem>
@@ -113,12 +117,11 @@ const PostListItem: React.FC<IPostListItem> = ({ post }) => {
       </LeftBox>
       <RightBox
         whileHover={{
-          scale: 1.1,
+          scale: 1.05,
         }}
+        onClick={() => navigate(`/user/${post.userId}`)}
       >
-        <SLink to={`user/${post.userId}`}>
-          {data?.findUserById.user?.name}
-        </SLink>
+        {data?.findUserById.user?.name}
       </RightBox>
     </Container>
   );

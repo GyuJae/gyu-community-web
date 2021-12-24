@@ -47,10 +47,6 @@ export interface ReadCommentsLikeSortInput {
   take: number;
 }
 
-export interface ReadLikeCountInput {
-  postId: number;
-}
-
 export interface ReadPostByIdInput {
   postId: number;
 }
@@ -81,6 +77,10 @@ export interface SearchPostsInput {
 export interface createUserInput {
   name: string;
   password: string;
+}
+
+export interface editUserInput {
+  name: string;
 }
 
 export interface loginInput {
